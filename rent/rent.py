@@ -916,7 +916,7 @@ class RentOrder(osv.osv, ExtendedOsv):
         This cron make invoices that have to be done.
         """
 
-        orders = self.filter(Q(state='ongoing')|Q(state='confirmed'))
+        orders = self.filter(Q(state='ongoing')|Q(state='confirmed')|Q(state='done'))
         orders_invoices_data = self.get_invoices_data(cr, uid, orders, context)
 
         for order in orders:
