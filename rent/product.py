@@ -33,15 +33,17 @@ class Product(osv.osv, ExtendedOsv):
     def check_rent_price(self, cr, uid, ids, context=None):
 
         """
-        We check that the rent price is neither empty or 0 if the product can be rent.
+        We check that the rent price is neither empty or < 0 if the product can be rent.
         """
 
         products = self.filter(ids)
 
         for product in products:
             if product.can_be_rent:
-                if not product.rent_price or product.rent_price <= 0:
-                    return False
+                if not product.rent_price:
+                    product.rent_price = 0
+                        if product.rent_price < 0:
+                            return False
         return True
 
     @report_bugs
@@ -71,11 +73,11 @@ class Product(osv.osv, ExtendedOsv):
     }
 
     _defaults = {
-        'can_be_rent' : False,
-        'rent_price' : 1.0,
+        'can_be_rent' : True,
+        'rent_price' : 0,
         'rent_price_unity' : default_price_unity,
     }
 
-    _constraints = [(check_rent_price, _('The Rent price must be a positive value.'), ['rent_price']),]
+    _constraints = [(check_rent_price, _('The Rent price must be a positive value or 0 for free service or product.'), ['rent_price']),]
 
 Product()
