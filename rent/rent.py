@@ -93,46 +93,46 @@ class RentOrder(osv.osv, ExtendedOsv):
     @report_bugs
     def on_duration_changed(self, cr, uid, ids, rent_begin, duration, duration_unity_id, shop_id, context=None):
 
-        """
-        This method is called when the duration or duration unity changed. Input shipping date
-        is updated to be set at the end of the duration automatically.
-        """
+#        """
+#        This method is called when the duration or duration unity changed. Input shipping date
+#        is updated to be set at the end of the duration automatically.
+#        """
 
-        if not rent_begin or not duration or not duration_unity_id:
+#        if not rent_begin or not duration or not duration_unity_id:
             return {}
         
-        day_unity = self.get(category_id__name='Duration', name='Day', _object='product.uom')
-        month_unity = self.get(category_id__name='Duration', name='Month', _object='product.uom')
-        year_unity = self.get(category_id__name='Duration', name='Year', _object='product.uom')
+#        day_unity = self.get(category_id__name='Duration', name='Day', _object='product.uom')
+#        month_unity = self.get(category_id__name='Duration', name='Month', _object='product.uom')
+#        year_unity = self.get(category_id__name='Duration', name='Year', _object='product.uom')
 
         # Converts the order duration (expressed in days/month/years) into the days duration
-        if duration_unity_id == day_unity.id:
-            delta = relativedelta(days=duration)
-        elif duration_unity_id == month_unity.id:
-            delta = relativedelta(months=duration)
-        elif duration_unity_id == year_unity.id:
-            delta = relativedelta(years=duration)
-        else:
-            raise osv.except_osv(_("Error"), "Unknown duration unity with id %d" % duration_unity_id)
+#        if duration_unity_id == day_unity.id:
+#            delta = relativedelta(days=duration)
+#        elif duration_unity_id == month_unity.id:
+#            delta = relativedelta(months=duration)
+#        elif duration_unity_id == year_unity.id:
+#            delta = relativedelta(years=duration)
+#        else:
+#            raise osv.except_osv(_("Error"), "Unknown duration unity with id %d" % duration_unity_id)
 
-        company = self.get(shop_id, _object='sale.shop').company_id
+#        company = self.get(shop_id, _object='sale.shop').company_id
 
         # Depending of the widget, the begin date can be a date or a datetime
-        try:
-            begin = to_datetime(rent_begin)
-        except ValueError:
-            try:
-                begin = to_date(rent_begin)
-            except ValueError:
-                raise osv.except_osv('Begin date have an invalid format.')
-
-        end = (begin + delta) - relativedelta(days=1)# We remove 1 day to set the return date the same day that the rent end date
+#        try:
+#            begin = to_datetime(rent_begin)
+#        except ValueError:
+#            try:
+#                begin = to_date(rent_begin)
+#            except ValueError:
+#                raise osv.except_osv('Begin date have an invalid format.')
+#
+#        end = (begin + delta) - relativedelta(days=1)# We remove 1 day to set the return date the same day that the rent end date
         # 'end' can be a datetime or a date object, depending of the widget.
-        end = datetime.datetime.combine(end.date() if isinstance(end, datetime.datetime) else end,
-            to_time(company.rent_afternoon_end))
-        end = end.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
+#        end = datetime.datetime.combine(end.date() if isinstance(end, datetime.datetime) else end,
+#            to_time(company.rent_afternoon_end))
+#        end = end.strftime(DEFAULT_SERVER_DATETIME_FORMAT)
 
-        return {'value' : {'date_in_shipping' : end}}
+#        return {'value' : {'date_in_shipping' : end}}
 
     @report_bugs
     def on_draft_clicked(self, cr, uid, ids, context=None):
@@ -916,7 +916,7 @@ class RentOrder(osv.osv, ExtendedOsv):
         This cron make invoices that have to be done.
         """
 
-        orders = self.filter(Q(state='ongoing')|Q(state='confirmed'))
+        orders = self.filter(Q(state='ongoing')|Q(state='confirmed')|Q(state='done'))
         orders_invoices_data = self.get_invoices_data(cr, uid, orders, context)
 
         for order in orders:

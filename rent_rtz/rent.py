@@ -28,34 +28,34 @@ COEFF_MAPPING = {
     1 : 1,
     2 : 1.5,
     3 : 2,
-    4 : 2.3,
-    5 : 2.5,
-    6 : 3,
-    7 : 3.5,
-    8 : 3.3,
-    9 : 3.8,
-    10 : 4.1,
-    11 : 4.4,
-    12 : 4.,
-    13 : 4.8,
-    14 : 5,
-    15 : 5.2,
-    16 : 5.5,
-    17 : 5.7,
-    18 : 6,
-    19 : 6.2,
-    20 : 6.5,
-    21 : 6.8,
-    22 : 7,
-    23 : 7.2,
-    24 : 7.5,
-    25 : 7.8,
-    26 : 8,
-    27 : 8.2,
-    28 : 8.4,
-    29 : 8.6,
-    30 : 8.8,
-    'more' : 9,
+    4 : 2.4,
+    5 : 2.8,
+    6 : 3.5,
+    7 : 4,
+    8 : 4.3,
+    9 : 4.6,
+    10 : 5,
+    11 : 5.2,
+    12 : 5.5,
+    13 : 5.7,
+    14 : 6,
+    15 : 6.3,
+    16 : 6.7,
+    17 : 7,
+    18 : 7.2,
+    19 : 7.5,
+    20 : 7.7,
+    21 : 8,
+    22 : 8.2,
+    23 : 8.4,
+    24 : 8.6,
+    25 : 8.8,
+    26 : 9,
+    27 : 9.2,
+    28 : 9.4,
+    29 : 9.6,
+    30 : 9.8,
+    'more' : 10,
 }
 
 class RentOrderRtz(osv.osv, ExtendedOsv):
@@ -128,7 +128,7 @@ class RentOrderRtzLine(osv.osv, ExtendedOsv):
     def get_invoice_lines_data(self, cr, uid, ids, line_price_factor, first_invoice=False, context=None):
 
         """
-        We append the coeff value tu the name in the invoice line.
+        We append the coeff value to the name and unit price in the invoice line
         """
 
         # TODO: Find a way to avoid the double browse (the one within super() and this one
@@ -136,7 +136,11 @@ class RentOrderRtzLine(osv.osv, ExtendedOsv):
         result = super(RentOrderRtzLine, self).get_invoice_lines_data(cr, uid, ids, line_price_factor, first_invoice, context)
 
         for index, line_data in enumerate(result):
-            line_data['name'] += ' (Coeff: %d)' % lines[index].coeff
+            line_data['name'] += ' (Coeff: %.2f)' % lines[index].coeff
+            if lines[index].product_type != 'service':
+                line_data['price_unit'] = lines[index].real_unit_price * lines[index].coeff / line_price_factor
+            else:
+                line_data['price_unit'] = lines[index].real_unit_price * lines[index].coeff
 
         return result
 
